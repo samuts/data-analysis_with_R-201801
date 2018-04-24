@@ -12,7 +12,7 @@ load("aula-02/data/dados_exercicio.RData")
 ##         quero ver uma saída na Console.
 ### # ####
 
-
+str(acessos_alunos)
 
 ### 2 ###
 ## Quantos elementos a variável acessos_alunos possui? Utilize uma função do R que retorna o tamanho da variável.
@@ -20,12 +20,14 @@ load("aula-02/data/dados_exercicio.RData")
 ## Dica: Vimos um exemplo no mesmo material sobre estruturas de dados
 ### # ###
 
-
+length(acessos_alunos)
 
 ### 3 ###
 ## Utilizando o seu código de aluno da Uniritter como nome de um valor da lista, imprima uma linha informando quantos acessos
 ## você fez. A linha deve ser impressa na Console, com um texto que diga o seu código de aluno e o valor conforme o seguinte exemplo:
 ## "O aluno <alu...> realizou N acessos."
+
+
 
 ## Dica 1: Utilize a função paste() para composição do texto que será impresso. 
 ## Dica 2: Vimos exemplos disto nos materiais dos tipos numéricos e das estruturas de dados.
