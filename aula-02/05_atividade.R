@@ -26,14 +26,13 @@ length(acessos_alunos)
 ## Utilizando o seu código de aluno da Uniritter como nome de um valor da lista, imprima uma linha informando quantos acessos
 ## você fez. A linha deve ser impressa na Console, com um texto que diga o seu código de aluno e o valor conforme o seguinte exemplo:
 ## "O aluno <alu...> realizou N acessos."
-
-
-
+            
 ## Dica 1: Utilize a função paste() para composição do texto que será impresso. 
 ## Dica 2: Vimos exemplos disto nos materiais dos tipos numéricos e das estruturas de dados.
 ### # ###
 
-
+minha_quantidade_acessos <- acessos_alunos$alu201830153
+print(paste("O aluno <alu201830153> realizou ",minha_quantidade_acessos, " acessos."))
 
 ### 4 ###
 ## A operação abaixo cria um vetor com todas as quantidades de acessos por aluno.
@@ -45,14 +44,15 @@ acessos <- unlist(acessos_alunos)
 ## 2. Com uma operação de indexação, crie um outro vetor contendo somente os valores maiores
 ## 3. Determine o tamanho do vetor da operação 2, imprimindo o resultado na Console
 ### # ###
-
-
+comparacao_relacional <- acessos[acessos > minha_quantidade_acessos]
+quantidade_mais_acessos_que_eu <- length(acessos[acessos > minha_quantidade_acessos])
+print(paste("O tamanho do vetor da operação 2 é: ",length(quantidade_mais_acessos_que_eu)))
 
 ### 5 ###
 ## Combine todas as etapas acima em uma única chamada, sem a criação dos vetores auxiliares
 ### # ###
 
-
+print(paste("O tamanho do vetor da operação 2 é: ", length(length(acessos[acessos > minha_quantidade_acessos])) ))
 
 ### 6 ###
 ## Agora determine quantos colegas fizeram menos acessos que você. 
@@ -61,7 +61,7 @@ acessos <- unlist(acessos_alunos)
 ## Dica: Lembre que falamos sobre como o R faz conversões implícitas entre o tipo lógico e tipos numéricos
 ### # ###
 
-
+sum(acessos < minha_quantidade_acessos)
 
 ### 7 ###
 ## Supondo que eu quero atribuir uma nota de participação baseada na quantidade de acessos, com a seguinte definição:
@@ -74,6 +74,19 @@ acessos <- unlist(acessos_alunos)
 ## OBSERVAÇÃO :: Não avaliarei participação na forma do enunciado deste exercício. 
 ### # ###
 
+notas <- NULL
+
+for (i in 1:length(acessos)){
+  if (acessos[i]==0) { 
+    notas[i] <- 0
+  } else if (acessos[i]>0 && acessos[i]<=10){
+    notas[i] <- 1
+  } else {
+    notas[i] <- 2
+  }
+}
+
+notas
 
 
 ### 8 ###
@@ -92,19 +105,51 @@ acessos_alunos_e_guest$guest <- NA
 ## Repita as atividades 4, 5, 6, e 7 utilizando o acessos_com_guest no lugar da lista acessos_alunos.
 ## Tome o devido cuidado de sempre criar variáveis com nomes diferentes das já utilizadas! 
 
+############ -> Atividade 4
+GUEST_acessos <- unlist(acessos_alunos_e_guest)
+GUEST_comparacao_relacional <- acessos[acessos_alunos_e_guest > minha_quantidade_acessos]
+GUEST_quantidade_mais_acessos_que_eu <- length(GUEST_acessos[GUEST_acessos > minha_quantidade_acessos])
+paste("O tamanho do vetor da operação 2 é: ",length(GUEST_quantidade_mais_acessos_que_eu))
 
+############ -> Atividade 5
+print(paste("O tamanho do vetor da operação 2 é: ", length(length(GUEST_acessos[GUEST_acessos > minha_quantidade_acessos])) ))
+
+############ -> Atividade 6 
+sum(GUEST_acessos < minha_quantidade_acessos)
+
+############ -> Atividade 7
+GUEST_notas <- NULL
+
+for (i in 1:length(GUEST_acessos)){
+  if (GUEST_acessos[i]==0) { 
+    GUEST_notas[i] <- 0
+  } else if (GUEST_acessos[i]>0 && GUEST_acessos[i]<=10){
+    GUEST_notas[i] <- 1
+  } else {
+    GUEST_notas[i] <- 2
+  }
+}
+
+length(GUEST_notas)
 
 ### 10 ###
 ## Responda as seguintes perguntas:
 
 
 # 1. Houve modificação no número de alunos com mais e com menos acessos que você?
+# RESPOSTA: Não houve modificação.
 
 # 2. Como você conclui que o R trata comparações (operações relacionais) entre valores numéricos e NA?
+# RESPOSTA: a linguagem não considera valores que contém NA em suas comparações.
 
 # 3. Qual o resultado do uso da função sum na presença de NA? O que você conclui sobre a operação de soma de todos os valores de
 #    um vetor na presença de NA?
+# RESPOSTA: ele não consegue somar quando temos NA na lista, retorna propriamente "NA".
 
 # 4. Execute o comando abaixo para ler a documentação da função sum e veja se há como modificar a chamada da função sum na presença
 #    de NAs. Teste os exemplos da página de help da função sum.
+
+# RESPOSTA
 help(sum)
+sum(GUEST_acessos) # <- SUM, sem tratar os NA retorna, "NA"
+sum(GUEST_acessos, na.rm = TRUE) # Conforme a documentação, quando adicionamos estes parametros, ele soma todas os acessos, desconsiderando os items que contem NA
