@@ -168,6 +168,8 @@ print("Atividade")
 
 ## Código aqui
 
+IQR(subset_salarios$REMUNERACAO_REAIS) / quantile(subset_salarios$REMUNERACAO_REAIS)
+
 #' 
 #' __Atividade II__
 #' 
