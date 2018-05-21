@@ -20,6 +20,24 @@ library(lubridate)
 ## 
 ### # ####
 
+salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
+
+var_cargos <- salarios %>% 
+  select(DESCRICAO_CARGO) %>% 
+  count(DESCRICAO_CARGO) %>%
+  filter(n >= 200) %>%
+  pull(DESCRICAO_CARGO)
+
+ano_atual <- format(Sys.Date(), "%Y")
+
+salarios <- salarios %>% mutate(TOTAL_SALARIO = REMUNERACAO_REAIS + ( REMUNERACAO_DOLARES * 3.2421),
+                                ano_1 = ano_atual - year(DATA_INGRESSO_ORGAO),
+                                ano_2 = ano_atual - year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO),
+                                correlacao = cor(ano_2,ano_1) ) %>%
+  filter( DESCRICAO_CARGO %in% c(var_cargos))
+
+print(salarios)
+
 ### 2 ###
 ##
 ## - A partir do dataset do exercício anterior, selecione os 10 cargos de correlação mais forte (seja positiva ou negativa) e os 
@@ -30,3 +48,4 @@ library(lubridate)
 ##
 ### # ###
 
+salarios

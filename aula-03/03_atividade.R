@@ -14,6 +14,10 @@ salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 ## 
 ### # ####
 
+salarios <- salarios %>% mutate(TOTAL_SALARIO = REMUNERACAO_REAIS + ( REMUNERACAO_DOLARES * 3.2421))
+salarios_1 <- salarios %>% filter(TOTAL_SALARIO >= 900)
+
+print(salarios_1)
 
 ### 2 ####
 ## 
@@ -22,10 +26,20 @@ salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 ## Além de listar os 5 cargos e as quantidades, crie um vetor com os nomes destes 5 cargos. Crie este vetor com o nome de cargos_diferente_lotacao.
 ## 
 ## Dica: a função pull() do dplyr extrai uma variável em formato de vetor.
-salarios %>% count(UF_EXERCICIO) %>% pull(UF_EXERCICIO) -> ufs # EXEMPLO
+#salarios %>% count(UF_EXERCICIO) %>% pull(UF_EXERCICIO) -> ufs # EXEMPLO
 ## 
 ### # ####
 
+salarios_2 <- salarios %>% 
+  filter( ORGSUP_LOTACAO != ORGSUP_EXERCICIO ) %>% 
+  select(DESCRICAO_CARGO) %>% 
+  count(DESCRICAO_CARGO) %>%
+  arrange(desc(n)) %>%
+  head( n = 5) 
+
+print(salarios_2)
+
+ar_cargos <- salarios_2 %>% pull(DESCRICAO_CARGO)
 
 ### 3 ####
 ## 
@@ -49,3 +63,15 @@ salarios %>% filter(DESCRICAO_CARGO %in% c("MINISTRO DE PRIMEIRA CLASSE", "ANALI
 ## 
 ### # ####
 
+salarios_3 <- salarios %>% filter(DESCRICAO_CARGO %in% c(ar_cargos)) %>% 
+  mutate(VAR_MESMO_ORGAO = if_else( ORGSUP_LOTACAO == ORGSUP_EXERCICIO, "SIM", "NÃO")) %>%
+  select(DESCRICAO_CARGO,VAR_MESMO_ORGAO,TOTAL_SALARIO) %>%
+  group_by(DESCRICAO_CARGO,VAR_MESMO_ORGAO) %>%
+  summarize(MEDIA = mean(TOTAL_SALARIO),
+            DESVIO_PADRAO = sd(TOTAL_SALARIO),
+            MEDIANA = median(TOTAL_SALARIO),
+            DESVIO_ABS_MEDIANA = median( abs( TOTAL_SALARIO - median( TOTAL_SALARIO ))),
+            MINIMO = min(TOTAL_SALARIO),
+            MAXIMO = max(TOTAL_SALARIO))
+
+print(salarios_3)
