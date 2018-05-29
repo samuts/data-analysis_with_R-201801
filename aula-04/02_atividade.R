@@ -22,21 +22,38 @@ library(lubridate)
 
 salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 
-var_cargos <- salarios %>% 
+lista_cargos <- salarios %>% 
   select(DESCRICAO_CARGO) %>% 
   count(DESCRICAO_CARGO) %>%
   filter(n >= 200) %>%
   pull(DESCRICAO_CARGO)
 
-ano_atual <- format(Sys.Date(), "%Y")
+ano_atual <- format(Sys.Date(), "%Y") %>% 
+              as.numeric()
 
 salarios <- salarios %>% mutate(TOTAL_SALARIO = REMUNERACAO_REAIS + ( REMUNERACAO_DOLARES * 3.2421),
                                 ano_1 = ano_atual - year(DATA_INGRESSO_ORGAO),
                                 ano_2 = ano_atual - year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO),
                                 correlacao = cor(ano_2,ano_1) ) %>%
-  filter( DESCRICAO_CARGO %in% c(var_cargos))
+  filter( DESCRICAO_CARGO %in% c(lista_cargos))
 
 print(salarios)
+
+DF_1 <- salarios %>%
+  group_by(DESCRICAO_CARGO) %>%
+  filter(DESCRICAO_CARGO %in% lista_cargos) %>%
+  summarise(coefCorr = cor(x = year(DATA_INGRESSO_ORGAO),
+                           y = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO)),
+            dirCorr = if(coefCorr < 0) {print("Negativa")} else {
+                      if(coefCorr > 0) {print("Positiva")
+            }},
+            forcaCorr = if(abs(coefCorr) < 0.3) {print("Desprezível")} else {
+                        if(abs(coefCorr) < 0.5) {print("Fraca")} else {
+                        if(abs(coefCorr) < 0.7) {print("Moderada")} else {
+                        if(abs(coefCorr) < 0.9) {print("Forte")} else {
+                        if(abs(coefCorr) > 0.9) {print("Muito Forte")
+            }}}}}) %>%
+  ungroup()
 
 ### 2 ###
 ##
@@ -48,4 +65,33 @@ print(salarios)
 ##
 ### # ###
 
-salarios
+dezMaioresCorr <- DF_1 %>%
+  mutate(coefAbs = abs(coefCorr)) %>%
+  arrange(desc(coefAbs)) %>%
+  head(10) %>%
+  pull(DESCRICAO_CARGO)
+
+dezMenoresCorr <- DF_1 %>%
+  mutate(coefAbs = abs(coefCorr)) %>%
+  arrange(desc(coefAbs)) %>%
+  tail(10) %>%
+  pull(DESCRICAO_CARGO)
+
+Cargos_DF_2 <- c(dezMaioresCorr, dezMenoresCorr)
+
+DF_2 <- salarios %>%
+  group_by(DESCRICAO_CARGO) %>%
+  filter(DESCRICAO_CARGO %in% Cargos_DF_2) %>%
+  summarise(modaexercicio = names(sort(table(ORGSUP_EXERCICIO), decreasing = TRUE))[1],
+            modalotacao = names(sort(table(ORGSUP_LOTACAO), decreasing = TRUE))[1],
+            semelhantes = modalotacao == modaexercicio,
+            coefCorr = cor(x = year(DATA_INGRESSO_ORGAO),
+                                            y = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO)),
+            forcaCorr = if(abs(coefCorr) < 0.3) {print("Desprezível")} else {
+                        if(abs(coefCorr) < 0.5) {print("Fraca")} else {
+                        if(abs(coefCorr) < 0.7) {print("Moderada")} else {
+                        if(abs(coefCorr) < 0.9) {print("Forte")} else {
+                        if(abs(coefCorr) > 0.9) {print("Muito Forte")}}}}}) %>%
+  ungroup()
+
+# COMENTARIO: Se as modas forem diferentes a correlação é desprezível, mas se forem semelhantes dizemos que há uma correlação forte.
