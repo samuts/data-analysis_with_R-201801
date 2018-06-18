@@ -2,7 +2,7 @@
 # install.packages("RSQLite")
 
 # Banco de Dados Relacional e Colunar de propósito analítico, embutido
-# install.packages("MonetDBLite")
+install.packages("MonetDBLite")
 
 # Biblioteca para objetos JSON
 # install.packages("jsonlite")
