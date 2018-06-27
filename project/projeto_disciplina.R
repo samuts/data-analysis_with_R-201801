@@ -11,16 +11,39 @@ insta_products <- read_csv( "project/order_products_instacart.csv" ) # Produtos 
 
 
 #1 # Quantos dos produtos do cadastro nunca foram comprados?
-
+anti_join(products, insta_products, by = "product_id" ) %>% count()
 
 #2 # Crie um dataframe com os dados combinados de produtos, corredores e departamentos. 
-
+df_PCD <- products %>%
+            inner_join(aisles, by = "aisle_id") %>%
+            inner_join(departments, by = "department_id")
 
 #3 # Quais as 10 combinações corredor + departamento que possuem mais produtos cadastrados? Use o dataframe da atividade #2.
-
+df_PCD %>%
+    select(aisle_id, aisle, department_id, department) %>%
+    group_by(aisle_id, aisle, department_id, department) %>%
+    count(sort = TRUE) %>%
+    head(10) -> top_10_combinacoes_ids
 
 #4 # Qual o percentual de pedidos que possuem algum produto dos pares 'corredor + departamento' da atividade anterior?
+products %>%
+    inner_join(top_10_combinacoes_ids, by="aisle_id","department_id") %>%
+    select(product_id) %>%
+    distinct(product_id) %>%
+    inner_join(insta_products, by="product_id") %>%
+    select(order_id) %>%
+    distinct(order_id) -> orders_com_top_10_combinacoes
 
+insta_products %>%
+    select(order_id) %>%
+    distinct(order_id) -> orders_todas
+
+quantidade_total_orders <- orders_todas %>%
+                                count()
+quantidade_top_10_combinacoes <- orders_com_top_10_combinacoes %>%
+                                count()
+
+print((quantidade_top_10_combinacoes / quantidade_total_orders) * 100, digits = 4)
 
 #5 # Crie um novo dataframe de produtos em pedidos retirando aqueles produtos que não estão categorizados (usar resultado das atividades 3 e 4)
 
